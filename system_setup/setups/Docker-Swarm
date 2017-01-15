@@ -1,0 +1,12 @@
+We have followed the following steps for setting up  Docker and Docker-Swarm:
+
+1.Created a VPC in AWS , launched 4 boxes in AWS.
+2.Install the "docker-engine" on the boxes.(apt-get install)
+3.Initialize the docker-swarm on one box(docker swarm init --advertise-addr 172.31.30.18)
+4.Add the other boxes as docker-worker in swarm cluster(docker swarm join    --token SWMTKN-1-2wpul0ytk4qs0n1vgwtwn9wiu9vj5q7zf5t44kxl86p17kp1tz-70wvp3hk5wcvbpm48uqbhr6oq     172.31.30.18:2377)
+5.Created a new Docker-Service on the docker-swarm master node (docker service create --replicas 4 --mount type=volume,src=/var/log,dst=/var/log —name nginx-test nginx(tag of the image))
+6.Tested whether all the replicas has been correctly launched across the cluster.(docker service ps nginx-test)
+
+7.Wrote a backend API for scaling up and scaling down the app in the docker-swarm cluster
+
+
