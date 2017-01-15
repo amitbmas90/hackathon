@@ -1,0 +1,63 @@
+{
+  "title": "Skypher data",
+  "remarks": "Managing two Colos running in Docker swarm",
+  "groups": [
+    {
+      "name": "nginx-test-1",
+      "graphite": "http://guest:guest@54.169.230.239:8080/render",
+      "scale":"http://52.221.255.43:9001/add?service=nginx-test-4&number=",
+      "numBox": "prod.colo.ngx.systestcollectd.smartalert.gauge",
+      "holt_numBox": "timeShift(prod.colo.ngx.systestcollectd.smartalert.gauge,'-30min')",
+      "system_metric": [
+        "cpu"
+      ],
+      "cpu": {
+        "threshold": 50,
+        "thereafter":"10:1",
+        "graphite_url": "averageSeries(prod.colo.ngx.*.cpu*.cpu-idle)",
+        "holtwinter_url": "holtWintersForecast(timeShift(averageSeries(prod.colo.ngx.*.cpu*.cpu-idle),'-30min'))"
+
+      },
+      "requests": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "prod.ev1.perf-bifrost-1.app.s2s-bifrost-3003.outbound.def_root.status.200",
+        "holtwinter_url": "holtWintersForecast(timeShift(prod.ev1.perf-bifrost-1.app.s2s-bifrost-3003.outbound.def_root.status.200,'-10075min'))"
+      },
+      "dr_metric": {
+        "health_check": "http://54.169.230.239:8081/",
+        "response": 200,
+        "timeout": 2
+      },
+      "dr_colo" : "Colo2"
+
+    },
+    {
+      "name": "nginx-test-2",
+      "scale":"http://52.221.255.43:9001/add&service=nginx-test-2?number=",
+      "system_metric": [
+        "cpu",
+        "memory"
+      ],
+      "cpu": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "http://",
+        "holtwinter_url": "http://metrics-web.perf.ev1.inmobi.com/render/?width=586&height=308&_salt=1484431360.106&target=holtWintersForecast(timeShift(prod.ev1.perf-bifrost-1.sys.s2s-bifrost-3003.cpu-average.cpu-idle%2C%22-10075min%22))",
+        "scale":"52.221.255.43"
+      },
+      "memory": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "http://"
+      },
+      "dr_metric": {
+        "health_check": "http://domain2.name/lbstatus.html",
+        "response": 200,
+        "timeout": 2
+      },
+      "dr_colo" : "Colo1"
+
+    }
+  ]
+}

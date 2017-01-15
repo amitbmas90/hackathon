@@ -1,0 +1,58 @@
+{
+  "title": "Skypher data",
+  "remarks": "Managing two Colos running in Docker swarm",
+  "groups": [
+    {
+      "name": "Colo1",
+      "system_metric": [
+        "cpu",
+        "memory"
+      ],
+      "cpu": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "http://metrics-web.perf.ev1.inmobi.com/render/?width=586&height=308&_salt=1484405082.477&from=-5minutes&target=prod.ev1.perf-iatclick-1.sys.iat-click3001.cpu-average.cpu-idle&rawData",
+        "holtwinter_url": "http://metrics-web.perf.ev1.inmobi.com/render/?width=586&height=308&_salt=1484431360.106&target=holtWintersForecast(timeShift(prod.ev1.perf-bifrost-1.sys.s2s-bifrost-3003.cpu-average.cpu-idle%2C%22-10075min%22))",
+        "scale":"52.221.255.43"
+      },
+      "memory": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "http://metrics-web.perf.ev1.inmobi.com/render/?width=586&height=308&_salt=1484405082.477&from=-5minutes&target=prod.ev1.perf-iatclick-1.sys.iat-click3001.cpu-average.cpu-idle&rawData"
+      },
+      "dr_metric": {
+        "health_check": "http://54.169.230.239:8081/",
+        "response": 200,
+        "timeout": 2
+      },
+      "dr_colo" : "Colo2"
+
+    },
+    {
+      "name": "Colo2",
+      "system_metric": [
+        "cpu",
+        "memory"
+      ],
+      "cpu": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "http://",
+        "holtwinter_url": "http://metrics-web.perf.ev1.inmobi.com/render/?width=586&height=308&_salt=1484431360.106&target=holtWintersForecast(timeShift(prod.ev1.perf-bifrost-1.sys.s2s-bifrost-3003.cpu-average.cpu-idle%2C%22-10075min%22))",
+        "scale":"52.221.255.43"
+      },
+      "memory": {
+        "threshold": 40,
+        "thereafter":"10:1",
+        "graphite_url": "http://"
+      },
+      "dr_metric": {
+        "health_check": "http://domain2.name/lbstatus.html",
+        "response": 200,
+        "timeout": 2
+      },
+      "dr_colo" : "Colo1"
+
+    }
+  ]
+}
