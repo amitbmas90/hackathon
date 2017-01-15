@@ -37,9 +37,8 @@ class Skypher():
 
     def scale(self, num):
         url="{}{}".format(self.group_data.get('scale'),num)
-        print url
         data=requests.get(url)
-        print data
+       # print "Scaling by {}".format(num)
 
     def health_metrics(self):
         all = self.group_data
@@ -54,12 +53,9 @@ class Skypher():
             current_numbox = int(data[-1])
             print "Health {}".format(current_numbox)
             r2=requests.get(self.group_data.get('dr_capacity'))
-            print r2.text
 
             url = "{}{}".format(self.group_data.get('dr_scale'), current_numbox+int(r2.text))
-            print url
             data = requests.get(url)
-            print data
             updater=Update()
             updater.update(self.group_data.get('dr_ip'))
 
@@ -74,16 +70,16 @@ class Skypher():
         data = self.pull_graphite_data(complete_url)
         current_numbox=int(data[-1])
         if predicted_numbox> current_numbox:
-            print "scaling up"
+            print "scaling up by {}".format(predicted_numbox)
             self.scale(predicted_numbox)
 
     def check_sys_metric(self, threshold, graphite_url, thereafter):
 
         complete_url="{}?target={}".format(self.graphite,graphite_url)
-        print complete_url
+
         data=self.pull_graphite_data(complete_url)
         percentage, scale = [ int(x) for x in thereafter.split(':')]
-        print percentage, scale
+
         if data[-1] <= 40:
             check_ratio = math.ceil(40 - data[-1])
             scale_up = check_ratio/percentage*scale
@@ -116,6 +112,7 @@ class Skypher():
                print "Health check: OK  {}".format(health_check)
                return 0
         if counter == 5:
+            print "Health check: Failed  {}".format(health_check)
             return 1
 
     def pull_graphite_data(self, url):
@@ -123,12 +120,10 @@ class Skypher():
         # Make sure the url ends with '&rawData'
         if not url.endswith('&rawData'):
             url = url + '&rawData'
-        print url
         # Catch URL errors
         try:
 
             data = urllib.urlopen(url).read().strip()
-            print data
             if len(data) == 0:
                 sys.stderr.write("Error: No data was returned. Did you specify an existing metric? - %s" % url)
                 return 0
@@ -156,7 +151,6 @@ if __name__ == "__main__":
     if not data.get("groups",None):
         sys.stderr.write("%s: No valid groups found\n" % data)
     for group in data.get("groups",None):
-        print group
         if group.get("name",None) == 'nginx-test-1':
             new = Skypher(group)
             new.sys_metrics()
