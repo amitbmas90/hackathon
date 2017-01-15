@@ -6,6 +6,8 @@ import json
 import urllib
 import math
 import requests
+from dns_updater import Update
+import datetime
 
 class Skypher():
 
@@ -21,7 +23,6 @@ class Skypher():
             status=self.check_sys_metric(self.group_data.get(metrics).get('threshold'),
                                          self.group_data.get(metrics).get('graphite_url'),
                                          self.group_data.get(metrics).get('thereafter'))
-            status = 2
             if status == 1 :
                 self.scale(self.scale_up)
             if status == 2:
@@ -29,8 +30,10 @@ class Skypher():
             if status == 3:
                 now = datetime.datetime.now()
                 if  not now.minute % 10:
-
-                    self.scale()
+                    complete_url = "{}?target={}".format(self.group_data.get('graphite'), self.group_data.get('numBox'))
+                    data = self.pull_graphite_data(complete_url)
+                    current_numbox = int(data[-1])
+                    self.scale(current_numbox-1)
 
     def scale(self, num):
         url="{}{}".format(self.group_data.get('scale'),num)
@@ -43,6 +46,23 @@ class Skypher():
         health=self.check_health(all.get('dr_metric').get('health_check'),
                                 all.get('dr_metric').get('response'),
                                 all.get('dr_metric').get('timeout'))
+        if health ==0:
+            return 0
+        elif health == 1:
+            complete_url = "{}?target={}".format(self.group_data.get('graphite'), self.group_data.get('numBox'))
+            data = self.pull_graphite_data(complete_url)
+            current_numbox = int(data[-1])
+            print "Health {}".format(current_numbox)
+            r2=requests.get(self.group_data.get('dr_capacity'))
+            print r2.text
+
+            url = "{}{}".format(self.group_data.get('dr_scale'), current_numbox+int(r2.text))
+            print url
+            data = requests.get(url)
+            print data
+            updater=Update()
+            updater.update(self.group_data.get('dr_ip'))
+
 
 
     def predict(self,holt_graphite_url,graphite_url):
@@ -84,7 +104,7 @@ class Skypher():
         counter = 0
         while counter <5:
           try:
-               r2 = requests.get(health_check, timeout=timeout, auth=HTTPBasicAuth('guest', 'guest'))
+               r2 = requests.get(health_check, timeout=timeout)
           except requests.exceptions.RequestException as e:
                sys.stderr.write("%s: %s\n" % (health_check, e))
                counter+=1
@@ -96,7 +116,7 @@ class Skypher():
                print "Health check: OK  {}".format(health_check)
                return 0
         if counter == 5:
-            print "scale up colo2 and shift traffic"
+            return 1
 
     def pull_graphite_data(self, url):
         """Pull down raw data from Graphite"""
@@ -108,9 +128,6 @@ class Skypher():
         try:
 
             data = urllib.urlopen(url).read().strip()
-            #d1=requests.get(url, auth=HTTPBasicAuth('guest', 'guest'))
-            #print d1
-            #data=d1.text.strip()
             print data
             if len(data) == 0:
                 sys.stderr.write("Error: No data was returned. Did you specify an existing metric? - %s" % url)
@@ -125,8 +142,6 @@ class Skypher():
 
 
 
-
-#    def check_thresholds(self, data):
 
 def parse_json(filename):
 
@@ -145,6 +160,7 @@ if __name__ == "__main__":
         if group.get("name",None) == 'nginx-test-1':
             new = Skypher(group)
             new.sys_metrics()
+            new.health_metrics()
 
 
 
