@@ -1,0 +1,32 @@
+For setting up this application we have used the following tools-software.
+
+
+1.Container-management tool:
+For scaling up and scaling down our system based on certain metrics , we are using the  conatiner management tool .In our case we have used Docker-Swarm
+
+2.Containers :
+We have used and tested our app on the docker conatiner , we have used veriosn 1.12.6 .
+
+3.Metrics System analysis:
+For emiting , analysing and displaying the system metrics we are using Collectd , Graphite.Collectd we have used for metrics emission purpose whereas Graphite for metrics analysis and display.
+
+4.Programming Language:
+We have written all of backend code using Python2.7
+
+5.Cloud Technology:
+We have deployed and tested all of our application on AWS-EC2 environment .
+
+6.DNS:
+We have used Route53 of AWS for creating A records , setting up GeoBased DNS and also flipping the traffic from one endpoint to Another.
+
+7.Web Server :
+ We have used nginx in our web serving layer inside the Docker container.
+
+8.API:
+We have used Boto3 to automate the DNS entry task in AWS.  
+
+9.Framework:
+Used Flask for exposing an API which will scale up and scale down the number of nodes in Docker-Swarm
+
+
+

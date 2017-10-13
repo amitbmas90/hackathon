@@ -1,0 +1,13 @@
+Following are the steps we have followed for installing and configuring collectd and Graphite.
+
+1.Installation and setup of the collectd package on the system.
+
+2.Tweaked the collectd config file as per our need.
+
+3.Added some custom scripts in the collectd conf for emiting container metrics.
+
+4.Dockerisation of Graphite and deployment of the Graphite service .
+
+5.Created the custom URL needed for our appliaction in Graphite.
+
+
